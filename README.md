@@ -52,26 +52,26 @@
 
 # Suggested Folder Structure
 
-digital_modulation_repo/
-│── README.md
-│── docs/
+digital_modulation_repo
+├── README.md
+├── docs
 │   ├── intro.md
 │   ├── fundamentals.md
 │   ├── performance.md
-│── techniques/
-│   ├── amplitude/
+├── techniques
+│   ├── amplitude
 │   │   ├── ask.c
 │   │   ├── qam.c
-│   ├── frequency/
+│   ├── frequency
 │   │   ├── fsk.c
-│   ├── phase/
+│   ├── phase
 │   │   ├── bpsk.c
 │   │   ├── qpsk.c
-│   ├── hybrid/
+│   ├── hybrid
 │   │   ├── ofdm.c
-│── examples/
+├── examples
 │   ├── ber_vs_snr.py
 │   ├── constellation_ascii.txt
-│── applications/
+├── applications
 │   ├── wifi.md
 │   ├── iot.md
