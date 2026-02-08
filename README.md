@@ -1,3 +1,33 @@
+# wireless-comms-suite
+
+A practical C-based tutorial and library for wireless communication systems, bridging SDR_Notes and dsp-tutorial-suite.
+
+## Project Structure
+- chapters/: Tutorials, theory, diagrams, demo code for each topic/phase
+- include/: Public C headers (protocols, channel models, utils)
+- src/: Core C source files (protocol stacks, channel, MAC/PHY)
+- tests/: Unit and integration tests (C test framework)
+- reference/: API docs, protocol specs, diagrams
+
+## Learning Path (Phased)
+1. Foundations & Architecture
+2. Protocols & Standards
+3. Applications & Integration
+4. Advanced Topics & Bridge
+
+## Quick Start
+Clone the repo and build:
+```
+git clone https://github.com/nikhiloz/wireless-comms-suite.git
+cd wireless-comms-suite
+make
+```
+
+## License
+MIT
+
+## Author
+Nikhil Pandey
 # Wireless Communication Systems — C Tutorial Suite
 
 **A progressive C99 tutorial covering the complete digital communication chain — from source coding through real wireless protocol PHY implementations.**
@@ -14,11 +44,33 @@ This repository takes you from digital comms fundamentals through a full TX → 
 
 ### Companion Repositories
 
-| Repository | Focus |
-|-----------|-------|
-| [dsp-tutorial-suite](https://github.com/nikhiloz/dsp-tutorial-suite) | Pure DSP — FFT, filters, spectral analysis (30 chapters) |
-| [SDR_Notes](https://github.com/nikhiloz/SDR_Notes) | SDR documentation — hardware, software, protocols, projects |
-| **This repo** | Wireless comms — TX/RX chain, coding, sync, real protocol PHY |
+This project bridges DSP theory with wireless communication implementations. See the full comparison:
+
+| Aspect | **dsp-tutorial-suite** | **SDR_Notes** | **wireless-comms-suite** |
+|--------|------------------------|---------------|------------------------|
+| **Purpose** | Core DSP algorithms & theory | SDR hardware/software reference | Wireless communication systems |
+| **Content Type** | Executable code + markdown | Documentation only | Executable code + markdown |
+| **Language** | Pure C99 | Markdown | Pure C99 |
+| **Scope** | 30 chapters: signals, transforms, filters, analysis, adaptive filters | 9 sections: RF basics, hardware, software, protocols, projects | 24 chapters: modulation, coding, channel, sync, real protocols |
+| **Target Audience** | DSP students & engineers | SDR hobbyists & learners | Wireless systems implementers |
+| **Theory vs Practice** | 80% theory, 20% code | 90% reference, 10% guides | 50% theory, 50% code |
+| **Key Algorithms** | FFT, filters, spectral analysis, adaptive | Reference charts, hardware DB | Modulation, channel models, PHY layers |
+| **Real Protocol PHY** | N/A | Reference docs | WiFi, Bluetooth, Zigbee, LoRa, ADS-B |
+
+**Learning Integration**:
+```
+dsp-tutorial-suite (Foundation Algorithms)
+    ↓
+wireless-comms-suite (Apply to communication chains)
+    ↓
+SDR_Notes (Understand hardware & protocols)
+```
+
+**Recommended Paths**:
+- Learn DSP first → [dsp-tutorial-suite](https://github.com/nikhiloz/dsp-tutorial-suite) chapters 1-10
+- Understand wireless → [wireless-comms-suite](https://github.com/nikhiloz/wireless-comms-suite) parts I-III
+- Reference hardware/protocols → [SDR_Notes](https://github.com/nikhiloz/SDR_Notes) all sections
+- Implement a protocol PHY → [wireless-comms-suite](https://github.com/nikhiloz/wireless-comms-suite) chapters 16-20
 
 ---
 
