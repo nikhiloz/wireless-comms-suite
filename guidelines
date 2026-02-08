@@ -1,0 +1,39 @@
+
+WIRELESS-COMMS-SUITE: PROJECT OUTLINE
+
+Style: Follows https://github.com/nikhiloz/dsp-tutorial-suite (C code only, no Python/other languages)
+Purpose: Bridge between SDR_Notes (SDR theory, hardware/software, protocols) and dsp-tutorial-suite (DSP concepts, C implementations)
+Distinction: Focuses on practical wireless communication systems, protocol stacks, and real-world applications, with C code for all layers.
+
+PHASED IMPLEMENTATION PLAN
+
+Phase 1: Foundations & Architecture
+	- Overview of wireless communication systems (block diagrams, signal flow)
+	- Basic transmitter/receiver structure in C
+	- Channel models (AWGN, fading, interference) in C
+	- Project structure: chapters/, include/, src/, tests/, reference/
+
+Phase 2: Protocols & Standards
+	- Implement core wireless standards (Wi-Fi, Bluetooth, Zigbee, LoRa, Cellular)
+	- MAC/PHY layer code examples (frame formats, channel access, modulation)
+	- Protocol stack demos (packet encoding/decoding, state machines)
+
+Phase 3: Applications & Integration
+	- End-to-end wireless links (transmitter, channel, receiver)
+	- IoT and mesh network examples
+	- Real-world integration: hardware interfacing, test utilities
+	- Spectrum management and monitoring tools
+
+Phase 4: Advanced Topics & Bridge
+	- Bridging SDR and DSP: integrating SDR hardware with protocol stacks
+	- DSP for wireless: filtering, demodulation, error correction in C
+	- Multi-protocol coexistence, advanced channel models
+	- Capstone projects: complete wireless system demos
+
+Each phase will include:
+	- Theory (README.md, diagrams)
+	- C code (demo.c, library modules)
+	- Tests (unit tests, integration tests)
+	- Reference (API docs, protocol specs)
+
+This outline ensures wireless-comms-suite is a practical, C-based bridge between SDR_Notes and dsp-tutorial-suite, with clear phased development.
