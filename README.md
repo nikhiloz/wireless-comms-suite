@@ -4,6 +4,9 @@
 
 Built as the practical bridge between [dsp-tutorial-suite](https://github.com/nikhiloz/dsp-tutorial-suite) (DSP algorithms) and [SDR_Notes](https://github.com/nikhiloz/SDR_Notes) (hardware/protocol reference).
 
+### Learning Path
+![Learning path across the three repositories](diagrams/learning_path.png)
+
 ---
 
 ## Highlights
@@ -79,6 +82,9 @@ wireless-comms-suite/
 
 ## Chapters
 
+### Chapter Progression
+![24-chapter progression map](diagrams/chapter_map.png)
+
 ### Part I — Foundations
 
 | Ch | Title | Topics |
@@ -140,6 +146,9 @@ make release
 ---
 
 ## Library Modules
+
+### Module Dependency Graph
+![Module dependency graph](diagrams/module_deps.png)
 
 | Header | Description | Key Functions |
 |--------|-------------|---------------|

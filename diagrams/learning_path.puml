@@ -1,0 +1,61 @@
+@startuml learning_path
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Recommended Learning Path
+
+rectangle "**dsp-tutorial-suite**\n//30 chapters//" as dsp #E8F5E9 {
+    rectangle "Signals &\nSampling" as s1 #C8E6C9
+    rectangle "DFT / FFT" as s2 #C8E6C9
+    rectangle "FIR & IIR\nFilters" as s3 #C8E6C9
+    rectangle "Spectral\nAnalysis" as s4 #C8E6C9
+
+    s1 -right-> s2
+    s2 -right-> s3
+    s3 -right-> s4
+}
+
+note bottom of dsp
+  Foundation: core DSP algorithms & theory
+  Pure C99 | github.com/nikhiloz/dsp-tutorial-suite
+end note
+
+rectangle "**wireless-comms-suite**\n//24 chapters//" as wcs #FFF3E0 {
+    rectangle "Modulation\n& Coding" as w1 #FFE0B2
+    rectangle "Channel &\nSync" as w2 #FFE0B2
+    rectangle "OFDM &\nEqualiser" as w3 #FFE0B2
+    rectangle "Protocol\nPHY" as w4 #FFE0B2
+
+    w1 -right-> w2
+    w2 -right-> w3
+    w3 -right-> w4
+}
+
+note bottom of wcs
+  Apply: wireless TX/RX chain, real protocol PHY
+  Pure C99 | github.com/nikhiloz/wireless-comms-suite
+end note
+
+rectangle "**SDR_Notes**\n//9 sections//" as sdr #E3F2FD {
+    rectangle "Hardware\n& RF" as r1 #BBDEFB
+    rectangle "Software\nTools" as r2 #BBDEFB
+    rectangle "Protocols &\nSpectrum" as r3 #BBDEFB
+    rectangle "Practical\nProjects" as r4 #BBDEFB
+
+    r1 -right-> r2
+    r2 -right-> r3
+    r3 -right-> r4
+}
+
+note bottom of sdr
+  Reference: SDR hardware, software, deployment
+  Markdown | github.com/nikhiloz/SDR_Notes
+end note
+
+dsp -down-> wcs : "  DSP primitives\n  feed into  "
+wcs -down-> sdr : "  Protocol knowledge\n  maps to real HW  "
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml module_deps
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+skinparam componentStyle rectangle
+
+title Library Module Dependencies
+
+rectangle "**phy.h**\nWi-Fi, BT, Zigbee, LoRa, ADS-B, MIMO, Link Budget" as phy #F3E5F5
+
+rectangle "**ofdm.h**\nFFT/IFFT\nOFDM mod/demod\nChannel est." as ofdm #E3F2FD
+
+rectangle "**sync.h**\nTiming recovery\nCarrier sync\nFrame sync\nScrambler" as sync #E3F2FD
+
+rectangle "**modulation.h**\nBPSK/QPSK/QAM\nGFSK, O-QPSK\nPulse shaping" as mod #E3F2FD
+
+rectangle "**spread_spectrum.h**\nPN sequences\nDSSS, FHSS\nZigbee chips" as spread #E3F2FD
+
+rectangle "**equaliser.h**\nZF, MMSE\nLMS, RLS\nDFE" as eq #E3F2FD
+
+rectangle "**channel.h**\nAWGN, Rayleigh\nRician, Multipath\nDoppler" as chan #FFF3E0
+
+rectangle "**coding.h**\nCRC, Hamming\nConv/Viterbi\nInterleaver, RLE" as code #FFF3E0
+
+rectangle "**comms_utils.h**\nCplx type, PRNG, bit helpers\nSNR conversion, signal power" as utils #E8F5E9
+
+phy -down-> ofdm
+phy -down-> sync
+phy -down-> mod
+phy -down-> spread
+phy -down-> eq
+
+ofdm -down-> chan
+sync -down-> chan
+mod -down-> chan
+spread -down-> chan
+eq -down-> chan
+
+chan -down-> code
+code -down-> utils
+
+@enduml

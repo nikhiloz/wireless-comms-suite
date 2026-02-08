@@ -1,0 +1,78 @@
+@startuml chapter_map
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title 24-Chapter Progression Map
+
+rectangle "**Part I -- Foundations**\nCh 01-05" as p1 #E8F5E9 {
+    rectangle "01 System\nOverview" as c01 #C8E6C9
+    rectangle "02 Source\nCoding" as c02 #C8E6C9
+    rectangle "03 Channel\nCoding" as c03 #C8E6C9
+    rectangle "04 Pulse\nShaping" as c04 #C8E6C9
+    rectangle "05 Digital\nModulation" as c05 #C8E6C9
+
+    c01 -right-> c02
+    c02 -right-> c03
+    c03 -right-> c04
+    c04 -right-> c05
+}
+
+rectangle "**Part II -- Channel & Sync**\nCh 06-10" as p2 #FFF3E0 {
+    rectangle "06\nAWGN" as c06 #FFE0B2
+    rectangle "07\nFading" as c07 #FFE0B2
+    rectangle "08 Timing\nRecovery" as c08 #FFE0B2
+    rectangle "09 Carrier\nSync" as c09 #FFE0B2
+    rectangle "10 Frame\nSync" as c10 #FFE0B2
+
+    c06 -right-> c07
+    c07 -right-> c08
+    c08 -right-> c09
+    c09 -right-> c10
+}
+
+rectangle "**Part III -- Advanced Techniques**\nCh 11-15" as p3 #E3F2FD {
+    rectangle "11\nViterbi" as c11 #BBDEFB
+    rectangle "12 Inter-\nleaving" as c12 #BBDEFB
+    rectangle "13 Equali-\nsation" as c13 #BBDEFB
+    rectangle "14\nOFDM" as c14 #BBDEFB
+    rectangle "15 Spread\nSpectrum" as c15 #BBDEFB
+
+    c11 -right-> c12
+    c12 -right-> c13
+    c13 -right-> c14
+    c14 -right-> c15
+}
+
+rectangle "**Part IV -- Protocol PHY**\nCh 16-20" as p4 #F3E5F5 {
+    rectangle "16\nWi-Fi" as c16 #E1BEE7
+    rectangle "17\nBluetooth" as c17 #E1BEE7
+    rectangle "18\nZigbee" as c18 #E1BEE7
+    rectangle "19\nLoRa" as c19 #E1BEE7
+    rectangle "20\nADS-B" as c20 #E1BEE7
+
+    c16 -right-> c17
+    c17 -right-> c18
+    c18 -right-> c19
+    c19 -right-> c20
+}
+
+rectangle "**Part V -- System Design**\nCh 21-24" as p5 #FFEBEE {
+    rectangle "21 Link\nBudget" as c21 #FFCDD2
+    rectangle "22 BER\nSimulation" as c22 #FFCDD2
+    rectangle "23\nMIMO" as c23 #FFCDD2
+    rectangle "24 Full\nTransceiver" as c24 #FFCDD2
+
+    c21 -right-> c22
+    c22 -right-> c23
+    c23 -right-> c24
+}
+
+p1 -down-> p2
+p2 -down-> p3
+p3 -down-> p4
+p4 -down-> p5
+
+@enduml
