@@ -1,0 +1,40 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 07 — demo.c Code Flow
+
+start
+
+partition "**Rayleigh Fading + AWGN**" {
+    :Generate 1000 BPSK symbols;
+    :Apply Rayleigh flat fading
+     channel_rayleigh_flat(&ch, tx, N, rx, h_est);
+    :Add AWGN at 15 dB;
+    :Equalise: rx[i] / h_est[i];
+    :Demodulate → count errors;
+    :Print Rayleigh BER;
+}
+
+partition "**Rician Fading + AWGN**" {
+    :Same 1000 BPSK symbols;
+    :Apply Rician fading (K = 5 dB)
+     channel_rician_flat(&ch, tx, N, rx, h_est, K);
+    :Add AWGN, equalise, demod;
+    :Print Rician BER (lower than Rayleigh);
+}
+
+partition "**Multipath Impulse Response**" {
+    :Init 3-tap channel
+     channel_multipath_init(&ch, 3,
+       delays=[0,3,7], gains=[0,−3,−6]);
+    :Apply to unit impulse;
+    :Print tap coefficients;
+}
+
+stop
+
+@enduml

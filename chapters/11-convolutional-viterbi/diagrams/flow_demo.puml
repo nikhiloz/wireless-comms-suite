@@ -1,0 +1,47 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 11 — demo.c Code Flow (Coded vs Uncoded BER)
+
+start
+
+:Generate 100 random data bits;
+:Convolutional encode (rate 1/2)
+ conv_encode(bits, 100, coded)
+ → 200 coded bits;
+
+:Print table header:
+ Eb/N0 | Uncoded BER | Coded BER | Gain(dB);
+
+while (Eb/N0 = 0, 2, 4, 6, 8, 10 dB) is (next)
+
+    fork
+        partition "**Uncoded Path**" #FFEBEE {
+            :BPSK modulate 100 bits;
+            :Add AWGN at Eb/N0;
+            :Demodulate;
+            :Count errors → uncoded BER;
+        }
+    fork again
+        partition "**Coded Path**" #E3F2FD {
+            :BPSK modulate 200 coded bits;
+            :Add AWGN at Eb/N0 − 3dB
+             (rate penalty);
+            :Demodulate → hard bits;
+            :Viterbi decode
+             viterbi_decode(rx, 200, decoded);
+            :Count errors → coded BER;
+        }
+    end fork
+
+    :Coding gain = 10·log₁₀(uncoded/coded);
+    :Print table row;
+endwhile (done)
+
+stop
+
+@enduml

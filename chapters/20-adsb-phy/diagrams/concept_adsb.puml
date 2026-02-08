@@ -1,0 +1,63 @@
+@startuml concept_adsb
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title ADS-B / Mode S PHY — PPM Frame Structure
+
+rectangle "**Preamble (8 us)**" as pre #E8F5E9
+
+note bottom of pre
+  4 pulse positions at 1090 MHz
+  Pattern: (1 0 1 0 0 0 0 1 0 0 0 1 0 0 0 0)
+  (at 2 MHz -> 16 samples)
+  Reliable detection in noise
+end note
+
+rectangle "**Data (112 us)**" as data #FFF3E0
+
+note bottom of data
+  112 bits PPM-encoded
+  Bit=1: (high, low) in 1us slot
+  Bit=0: (low, high) in 1us slot
+  At 2 MHz -> 2 samples/bit -> 224 samples
+  Total frame: 16 + 224 = 240 samples
+end note
+
+rectangle "**Message Fields (112 bits)**" as fields #E3F2FD {
+    rectangle "DF\n(5 bits)" as df #BBDEFB
+    rectangle "CA\n(3 bits)" as ca #BBDEFB
+    rectangle "ICAO Address\n(24 bits)" as icao #90CAF9
+    rectangle "ME / Data\n(56 bits)" as me #64B5F6
+    rectangle "CRC-24\n(24 bits)" as crc #42A5F5
+
+    df -right-> ca
+    ca -right-> icao
+    icao -right-> me
+    me -right-> crc
+
+    note bottom of crc
+      adsb_crc24(msg, n_bytes)
+      Generator: 0xFFF409
+      XORed with ICAO → PI field
+    end note
+}
+
+rectangle "**Processing Pipeline**" as pipe #F3E5F5
+
+note bottom of pipe
+  TX: adsb_encode(icao, me56, msg112)
+      adsb_modulate(msg112, 112, 2e6, iq)
+  RX: adsb_demodulate(iq, 240, msg, &n_bits)
+      adsb_crc24(msg, 14) -> verify = 0
+end note
+
+pre -right-> data
+data -down-> fields
+fields -down-> pipe
+
+@enduml
+
+@enduml

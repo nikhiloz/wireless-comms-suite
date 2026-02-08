@@ -1,0 +1,64 @@
+@startuml concept_mimo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title MIMO & Spatial Diversity — Alamouti STBC & MRC
+
+rectangle "**Alamouti 2×1 STBC**" as alamouti #E8F5E9 {
+    rectangle "TX Ant 1" as tx1 #C8E6C9
+    rectangle "TX Ant 2" as tx2 #A5D6A7
+
+    note bottom of tx1
+      Time 0: s₀
+      Time 1: −s₁*
+    end note
+
+    note bottom of tx2
+      Time 0: s₁
+      Time 1: s₀*
+    end note
+
+    note bottom of alamouti
+      mimo_alamouti_encode(s0, s1, &x)
+      Full diversity order = 2
+      Rate = 1 (no rate loss)
+      Only 2×1 scheme with full rate+diversity
+      ────────────────────────────
+      Decoder: mimo_alamouti_decode(&x, h0, h1, &s0, &s1)
+      ŝ₀ = h₀*·r₀ + h₁·r₁*
+      ŝ₁ = h₁*·r₀ − h₀·r₁*
+    end note
+}
+
+rectangle "**MRC (1×Nᵣ)**" as mrc #FFF3E0 {
+    rectangle "RX₁" as rx1 #FFE0B2
+    rectangle "RX₂" as rx2 #FFE0B2
+    rectangle "RX₃" as rx3 #FFE0B2
+    rectangle "RX₄" as rx4 #FFE0B2
+
+    note bottom of mrc
+      mimo_mrc(rx_array, h_array, Nr, &combined)
+      ŝ = Σ hᵢ* · rᵢ / Σ |hᵢ|²
+      Diversity order = Nᵣ
+      Each +antenna → steeper BER slope
+      @10dB: Nr=1→high BER, Nr=4→near AWGN
+    end note
+}
+
+rectangle "**Diversity Gain**" as gain #E3F2FD {
+    note bottom
+      Rayleigh BER slope: 1/SNR^d
+      d = diversity order
+      Alamouti: d=2 vs SISO d=1
+      MRC Nr=4: d=4
+      ~10–15 dB gain at BER=10⁻³
+    end note
+}
+
+alamouti -down-> gain
+mrc -down-> gain
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml concept_costas_loop
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Carrier Synchronisation — Costas Loop
+
+rectangle "**RX Signal**\nwith freq offset Δf" as input #FFEBEE
+
+rectangle "**Costas Loop**" as loop #E3F2FD {
+
+    rectangle "Multiply by\nNCO output\ne^(−jφ)" as mix #BBDEFB
+
+    rectangle "**I arm**\nRe{·}" as iarm #90CAF9
+    rectangle "**Q arm**\nIm{·}" as qarm #90CAF9
+
+    rectangle "Phase Detector\ne = I·Q (BPSK)\nor Im{z²} (QPSK)" as pd #FFF176
+
+    rectangle "Loop Filter\nPI controller\n(BW, damping ζ)" as lf #FFE0B2
+
+    rectangle "NCO\nφ(n+1) = φ(n) + v(n)" as nco #C8E6C9
+
+    input -right-> mix
+    mix -down-> iarm
+    mix -down-> qarm
+    iarm -down-> pd
+    qarm -down-> pd
+    pd -right-> lf
+    lf -right-> nco
+    nco -up-> mix : "feedback\nphase correction"
+}
+
+rectangle "**Corrected\nSymbols**" as out #E8F5E9
+
+mix -right-> out : "after\nconvergence"
+
+note bottom of loop
+  BPSK: carrier_costas_bpsk(in, n, bw, damp, out)
+  QPSK: carrier_costas_qpsk(in, n, bw, damp, out)
+  Locks to carrier, removes Δf and Δφ
+  Convergence: ~50 symbols typical
+end note
+
+@enduml

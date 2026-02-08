@@ -1,0 +1,58 @@
+@startuml concept_wifi_ppdu
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title 802.11a/g Wi-Fi OFDM PHY — PPDU Frame Structure
+
+rectangle "**PLCP Preamble**" as preamble #E8F5E9 {
+    rectangle "Short Training\nSequence (STS)" as sts #C8E6C9
+    note bottom of sts
+      wifi_short_training(sts)
+      10 × 16-sample repeats = 160 samples
+      AGC, coarse freq/timing sync
+      8 µs duration
+    end note
+
+    rectangle "Long Training\nSequence (LTS)" as lts #A5D6A7
+    note bottom of lts
+      wifi_long_training(lts)
+      CP(32) + 2×64 = 160 samples
+      Fine freq sync, channel estimation
+      8 µs duration
+    end note
+}
+
+rectangle "**SIGNAL**" as sig #FFF3E0 {
+    note bottom
+      1 OFDM symbol (80 samples)
+      Rate + Length fields
+      Always BPSK, rate 1/2
+      4 µs
+    end note
+}
+
+rectangle "**DATA**" as data #E3F2FD {
+    note bottom
+      Variable N OFDM symbols
+      Payload through:
+      scrambler → conv encoder
+      → interleaver → modulation
+      → OFDM (48 data + 4 pilot)
+      wifi_build_ppdu(payload, len, rate, out)
+    end note
+}
+
+sts -right-> lts
+lts -right-> sig
+sig -right-> data
+
+note bottom
+  Total PPDU duration = 16µs + 4µs + N×4µs
+  Rate options: 6, 9, 12, 18, 24, 36, 48, 54 Mbps
+  wifi_scramble(poly, seed, bits, n) — x⁷+x⁴+1
+end note
+
+@enduml

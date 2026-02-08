@@ -1,0 +1,54 @@
+@startuml concept_interleaver
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Block Interleaving — Burst Error Protection
+
+rectangle "**Write Row-wise (8 rows x 6 cols)**" as write #E8F5E9
+
+note bottom of write
+  interleaver_init(&itl, 8, 6)
+  Input bits fill rows left to right:
+  row 0: b0  b1  b2  b3  b4  b5
+  row 1: b6  b7  b8  b9  b10 b11
+  row 2: b12 b13 b14 b15 b16 b17
+  ...    ...  ...  ...  ...  ...
+  row 7: b42 b43 b44 b45 b46 b47
+end note
+
+rectangle "**Read Column-wise**" as read #FFF3E0
+
+note bottom of read
+  interleaver_apply(&itl, in, 48, out)
+  Output: b0 b6 b12 ... b1 b7 b13 ...
+  Adjacent input bits separated by 8 positions
+end note
+
+rectangle "**Channel (Burst Error)**" as burst #FFEBEE
+
+note bottom of burst
+  6 consecutive bits corrupted
+  In interleaved domain: affects
+  one bit from 6 different rows
+end note
+
+rectangle "**Deinterleave**" as deint #E3F2FD
+
+note bottom of deint
+  interleaver_deapply(&itl, rx, 48, out)
+  Burst of 6 errors scattered
+  to 6 isolated single-bit errors
+  Each correctable by Hamming/FEC
+end note
+
+rectangle "**Corrected Data**" as corrected #C8E6C9
+
+write -right-> read : "48 bits"
+read -right-> burst : "interleaved"
+burst -right-> deint : "corrupted"
+deint -right-> corrected : "scattered\nerrors ✓"
+
+@enduml

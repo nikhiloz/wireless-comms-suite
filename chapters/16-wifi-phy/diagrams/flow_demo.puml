@@ -1,0 +1,44 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 16 — demo.c Code Flow
+
+start
+
+partition "**Training Sequences**" {
+    :Generate STS (160 samples)
+     wifi_short_training(sts);
+    :Print STS power;
+
+    :Generate LTS (160 samples)
+     wifi_long_training(lts);
+    :Print LTS power;
+}
+
+partition "**Wi-Fi Scrambler**" {
+    :Prepare test data {1,0,1,1,0,0,1,0};
+    :Scramble with seed 0x5D
+     wifi_scramble(0x7F, 0x5D, data, 8);
+    :Descramble (apply again)
+     wifi_scramble(0x7F, 0x5D, scrambled, 8);
+    :Verify: recovered == original;
+}
+
+partition "**Full PPDU Construction**" {
+    :Prepare payload "HelloWiFi!" (10 bytes);
+    :Build PPDU at WIFI_RATE_6 (6 Mbps)
+     n_samps = wifi_build_ppdu(
+       payload, 10, WIFI_RATE_6, ppdu);
+    :Print total IQ samples;
+    :Compute duration
+     samples / 20MHz = µs;
+    :Print PPDU duration;
+}
+
+stop
+
+@enduml

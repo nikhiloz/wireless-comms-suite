@@ -1,0 +1,64 @@
+@startuml concept_spread_spectrum
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Spread Spectrum — DSSS & FHSS
+
+rectangle "**DSSS (Direct-Sequence)**" as dsss #E8F5E9 {
+
+    rectangle "Data bit\n(+1 or −1)" as dbit #C8E6C9
+    rectangle "PN Code\n(31 chips)" as pn #C8E6C9
+    rectangle "Spread Signal\n= data × PN" as spread #A5D6A7
+
+    dbit -right-> spread : "×"
+    pn -right-> spread
+
+    note bottom of spread
+      dsss_spread(data, n, pn, chip_len, out)
+      Bandwidth: × chip_len
+      Processing gain: 10·log₁₀(31) ≈ 14.9 dB
+      Noise resilience ↑, jamming resistance ↑
+    end note
+
+    rectangle "Correlator\n(despread)" as corr #C8E6C9
+    note right of corr
+      dsss_despread(rx, n, pn, chip_len, out)
+      Multiply by same PN → collapse
+      Interferers decorrelate → suppressed
+    end note
+
+    spread -right-> corr : "→ channel →"
+}
+
+rectangle "**PN Sequences**" as pnseq #FFF3E0 {
+    rectangle "M-sequence\n(maximal length)" as mseq #FFE0B2
+    note bottom of mseq
+      pn_msequence(poly, degree, seq)
+      Length: 2^degree − 1
+      Autocorrelation: {L, −1}
+    end note
+
+    rectangle "Gold Code\n(CDMA)" as gold #FFE0B2
+    note bottom of gold
+      pn_gold(p1, p2, degree, shift, seq)
+      Cross-correlation bounded
+      Multiple users, same band
+    end note
+}
+
+rectangle "**FHSS (Freq Hopping)**" as fhss #E3F2FD {
+    note bottom
+      fhss_init(&fp, n_ch, n_hops, seed, dwell)
+      fhss_get_channel(&fp, hop_idx)
+      Hop across N channels pseudo-randomly
+      Avoids narrowband interference
+    end note
+}
+
+dsss -[hidden]down-> pnseq
+pnseq -[hidden]down-> fhss
+
+@enduml

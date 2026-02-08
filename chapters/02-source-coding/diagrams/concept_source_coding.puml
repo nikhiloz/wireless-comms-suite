@@ -1,0 +1,56 @@
+@startuml concept_source_coding
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Source Coding — Entropy & Compression
+
+rectangle "**Source**" as SRC #E8F5E9 {
+    rectangle "Symbol\nStream" as sym #C8E6C9
+    note right of sym
+      Symbols: {A, B, C, D}
+      Probabilities: {0.4, 0.3, 0.2, 0.1}
+    end note
+}
+
+rectangle "**Shannon Entropy**" as ENT #FFF9C4 {
+    rectangle "H = −Σ pᵢ log₂(pᵢ)" as h_calc #FFF176
+    note bottom of h_calc
+      entropy()
+      H ≈ 1.85 bits/symbol
+      Lower bound on avg code length
+    end note
+}
+
+rectangle "**Compression Methods**" as COMP #E3F2FD {
+    rectangle "Run-Length\nEncoding (RLE)" as rle #BBDEFB
+    note bottom of rle
+      rle_encode() / rle_decode()
+      Efficient for repeated runs
+      e.g. AAABBC → (A,3)(B,2)(C,1)
+    end note
+
+    rectangle "Huffman\nCoding" as huff #90CAF9
+    note bottom of huff
+      huffman_build()
+      Variable-length prefix codes
+      Most probable → shortest code
+    end note
+}
+
+rectangle "**Compressed\nBitstream**" as OUT #E8F5E9
+
+sym -down-> h_calc : "measure"
+sym -down-> rle : "encode"
+sym -down-> huff : "encode"
+rle -down-> OUT
+huff -down-> OUT
+
+note bottom of OUT
+  Avg bits/symbol ≥ H (Shannon limit)
+  Lossless: perfect reconstruction
+end note
+
+@enduml

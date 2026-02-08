@@ -1,0 +1,55 @@
+@startuml concept_frame_sync
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Frame Synchronisation — Barker Codes & Preamble Detection
+
+rectangle "**Barker-13 Sequence**" as barker #E8F5E9
+
+note bottom of barker
+  B = (+1 +1 +1 +1 +1 −1 −1 +1 +1 −1 +1 −1 +1)
+  Autocorrelation: peak = 13, sidelobes ≤ 1
+  Ideal for preamble detection
+end note
+
+rectangle "**Frame Structure**" as frame #FFF3E0 {
+    rectangle "Preamble\n(Barker-13)" as pre #FFE0B2
+    rectangle "Data\nPayload" as data #FFE0B2
+    rectangle "CRC" as crc #FFE0B2
+    pre -right-> data
+    data -right-> crc
+}
+
+rectangle "**Detection**" as det #E3F2FD {
+    rectangle "Sliding\nCorrelator" as corr #BBDEFB
+    note bottom of corr
+      frame_sync_detect(
+        signal, sig_len,
+        preamble, pre_len,
+        threshold)
+    end note
+
+    rectangle "Normalised\nCorrelation\nPeak ≥ 0.8" as thresh #90CAF9
+
+    corr -right-> thresh
+}
+
+rectangle "**Data Scrambler**" as scr #F3E5F5
+
+note bottom of scr
+  scrambler(poly, init, bits, n)
+  LFSR whitening: x7+x4+1
+  Self-inverse: apply twice = original
+  Removes DC bias in data
+end note
+
+rectangle "**Frame Start Index**" as fstart #C8E6C9
+
+frame -down-> corr : "received\nframe in noise"
+thresh -right-> fstart : "frame start\nindex"
+data -down-> scr : "before TX"
+
+@enduml

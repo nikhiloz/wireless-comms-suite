@@ -1,0 +1,55 @@
+@startuml concept_ber_monte_carlo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title BER/PER Monte Carlo Simulation — Methodology
+
+rectangle "**Simulation Parameters**" as params #E8F5E9
+
+note bottom of params
+  Target: minimum 50 errors per point
+  Max bits: 10,000,000
+  Eb/N0 sweep: 0 -> 12 dB
+  Modulation: BPSK, QPSK, 8-PSK, 16-QAM
+end note
+
+rectangle "**Monte Carlo Loop**" as mc #FFF3E0 {
+    rectangle "Generate\nrandom bits" as gen #FFE0B2
+    rectangle "Modulate\n(scheme)" as mod_blk #FFE0B2
+    rectangle "AWGN\nchannel" as awgn #FFE0B2
+    rectangle "Demodulate" as demod #FFE0B2
+    rectangle "Count\nerrors" as count #FFE0B2
+
+    gen -right-> mod_blk
+    mod_blk -right-> awgn
+    awgn -right-> demod
+    demod -right-> count
+    count -left-> gen : "loop until\nerrors ≥ 50 or\nbits ≥ 10M"
+}
+
+rectangle "**Statistical Confidence**" as conf #E3F2FD
+
+note bottom of conf
+  At 50 errors: +/-28% at 95% confidence
+  At 100 errors: +/-20%
+  At 1000 errors: +/-6.3%
+  Low BER points need many more bits
+end note
+
+rectangle "**BER Curves**" as curves #F3E5F5
+
+note bottom of curves
+  Plot: log10(BER) vs Eb/N0 (dB)
+  Validate: sim/theory ratio approx 1.0
+  Compare schemes at fixed Eb/N0
+  BPSK best, 16-QAM worst (per Eb)
+end note
+
+params -down-> mc
+mc -down-> conf
+conf -down-> curves
+
+@enduml

@@ -15,4 +15,12 @@ make build/bin/06-awgn-channel && ./build/bin/06-awgn-channel
 ```
 
 ---
+## Diagrams
+
+### Concept — AWGN Channel Model
+![AWGN channel model](diagrams/concept_awgn.png)
+
+The additive white Gaussian noise channel: signal plus i.i.d. Gaussian noise samples. Shows Eb/N0 → SNR conversion, Box-Muller Gaussian generation, and BER validation against Q-function theory.
+
+---
 [← Modulation](../05-modulation/README.md) | [Next: Fading Channels →](../07-fading-channels/README.md)

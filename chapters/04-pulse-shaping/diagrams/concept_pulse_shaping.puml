@@ -1,0 +1,62 @@
+@startuml concept_pulse_shaping
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Pulse Shaping & Line Coding — Signal Chain
+
+rectangle "**Binary Data**\n1 0 1 1 0 1 0 0" as bits #E8F5E9
+
+rectangle "**Line Coding**" as lc #FFF3E0 {
+    rectangle "NRZ Encode" as nrz #FFE0B2
+    note bottom of nrz
+      nrz_encode()
+      0 → −1.0
+      1 → +1.0
+    end note
+
+    rectangle "Manchester Encode" as man #FFE0B2
+    note bottom of man
+      manchester_encode()
+      0 → −1,+1
+      1 → +1,−1
+      Self-clocking, DC balanced
+    end note
+}
+
+rectangle "**Pulse Shaping Filter**" as ps #E3F2FD {
+    rectangle "Raised Cosine\n(α=0.35, 8 sps)" as rc #BBDEFB
+    note bottom of rc
+      raised_cosine(α, sps, span, h)
+      Zero-ISI at symbol centres
+      Bandwidth: (1+α) / 2T
+    end note
+
+    rectangle "Root Raised Cosine" as rrc #90CAF9
+    note bottom of rrc
+      root_raised_cosine(α, sps, span, h)
+      Matched filter: RRC×RRC = RC
+      Optimal SNR at receiver
+    end note
+}
+
+rectangle "**Shaped Baseband\nWaveform**" as wave #E8F5E9
+
+rectangle "**Eye Diagram**" as eye #F3E5F5 {
+    note bottom of eye
+      print_eye_diagram_ascii()
+      Visual ISI assessment
+      Open eye → low error rate
+    end note
+}
+
+bits -down-> nrz
+bits -down-> man
+nrz -down-> rc : "NRZ pulses"
+nrz -down-> rrc
+rc -down-> wave : "convolution\npulse_shape()"
+wave -down-> eye
+
+@enduml

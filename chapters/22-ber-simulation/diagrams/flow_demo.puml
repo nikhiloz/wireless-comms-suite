@@ -1,0 +1,40 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 22 — demo.c Code Flow
+
+start
+
+partition "**BPSK Rigorous BER Sweep (0–12 dB)**" {
+    :Print table header:
+     Eb/N0 | Sim BER | Theory BER | Ratio;
+
+    while (ebn0 = 0.0, 1.0, ... 12.0) is (next)
+        :errors = 0, total_bits = 0;
+        while (errors < 50 && total_bits < 10M) is (continue)
+            :Generate batch of 10000 bits;
+            :BPSK modulate → AWGN → demodulate;
+            :Accumulate errors & total_bits;
+        endwhile (threshold met)
+        :sim_ber = errors / total_bits;
+        :theory_ber = ber_bpsk_theory(ebn0);
+        :Print row with sim/theory ratio;
+    endwhile (sweep done)
+}
+
+partition "**Multi-Scheme Comparison @8 dB**" {
+    :Fix Eb/N0 = 8.0 dB;
+    while (scheme ∈ {BPSK, QPSK, 8-PSK, 16-QAM}) is (next)
+        :Run 10000-bit simulation;
+        :Compute BER for this scheme;
+    endwhile (all schemes)
+    :Print comparison table;
+}
+
+stop
+
+@enduml

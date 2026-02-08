@@ -1,0 +1,62 @@
+@startuml concept_hamming
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Channel Coding — Hamming(7,4) & CRC
+
+rectangle "**Data (4 bits)**" as data #E8F5E9 {
+    rectangle "d₃ d₂ d₁ d₀\n  1  0  1  1" as d #C8E6C9
+}
+
+rectangle "**Hamming(7,4) Encoder**" as enc #FFF3E0 {
+    rectangle "Add 3 parity bits\np₂ p₁ p₀" as parity #FFE0B2
+    note bottom of parity
+      hamming74_encode()
+      p₀ = d₀⊕d₁⊕d₃
+      p₁ = d₀⊕d₂⊕d₃
+      p₂ = d₁⊕d₂⊕d₃
+    end note
+}
+
+rectangle "**Channel**" as ch #FFEBEE {
+    rectangle "Single-bit\nerror injection" as err #FFCDD2
+    note bottom of err
+      Flip bit position 2
+      Simulates noise
+    end note
+}
+
+rectangle "**Hamming(7,4) Decoder**" as dec #E3F2FD {
+    rectangle "Syndrome\nCalculation" as syn #BBDEFB
+    note bottom of syn
+      hamming74_decode()
+      s = H · r^T
+      s ≠ 0 → error at position s
+      Correct: flip bit at syndrome
+      Returns corrected position
+    end note
+}
+
+rectangle "**CRC Detection**" as crc #F3E5F5 {
+    rectangle "CRC-16 / CRC-32" as crcblk #E1BEE7
+    note bottom of crcblk
+      crc16_ccitt(data, len)
+      crc32(data, len)
+      Detects burst errors
+      No correction capability
+    end note
+}
+
+rectangle "**Corrected Data**" as out #C8E6C9
+
+d -right-> parity : "4 bits"
+parity -right-> err : "7-bit\ncodeword"
+err -right-> syn : "corrupted\ncodeword"
+syn -right-> out : "corrected\n4 bits ✓"
+
+d -down-> crcblk : "any data"
+
+@enduml

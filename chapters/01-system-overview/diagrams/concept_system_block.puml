@@ -1,0 +1,51 @@
+@startuml concept_system_block
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam noteBorderColor #AAAAAA
+skinparam titleFontSize 18
+
+title Digital Communication System — End-to-End Block Diagram
+
+rectangle "**Transmitter (TX)**" as TX #E8F5E9 {
+    rectangle "Random\nBit Source" as src #C8E6C9
+    rectangle "BPSK\nModulator" as mod #A5D6A7
+    note bottom of mod
+      mod_modulate()
+      0 → −1, 1 → +1
+    end note
+}
+
+rectangle "**Channel**" as CH #FFF3E0 {
+    rectangle "AWGN\nChannel" as awgn #FFE0B2
+    note bottom of awgn
+      channel_awgn()
+      SNR = 10 dB
+      N(0, σ²) noise
+    end note
+}
+
+rectangle "**Receiver (RX)**" as RX #E3F2FD {
+    rectangle "BPSK\nDemodulator" as demod #BBDEFB
+    rectangle "BER\nMeasurement" as ber #90CAF9
+    note bottom of ber
+      Simulated vs Theory
+      Q(√(2·Eb/N0))
+    end note
+}
+
+src -right-> mod : "1000 bits"
+mod -right-> awgn : "IQ symbols"
+awgn -right-> demod : "noisy symbols"
+demod -right-> ber : "decoded bits"
+
+note bottom of TX
+  generate_random_bits(bits, 1000)
+end note
+
+note bottom of RX
+  Compare: simulated BER ≈ ber_bpsk_theory()
+end note
+
+@enduml

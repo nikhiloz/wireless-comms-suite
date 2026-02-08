@@ -1,0 +1,47 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 19 — demo.c Code Flow
+
+start
+
+partition "**Spreading Factor Table**" {
+    :Print SF comparison table;
+    while (SF = 7 .. 12) is (next)
+        :symbols = 2^SF;
+        :bits/symbol = SF;
+        :chirp length = 2^SF samples;
+        :Print row;
+    endwhile (done)
+}
+
+partition "**Modulate → Demodulate Round-Trip**" {
+    :Test symbols: (0, 42, 99, 127)
+     (for SF=7, max symbol = 127);
+    while (each test symbol) is (next)
+        :lora_modulate_symbol(sym, 7, chirp)
+         → 128 complex samples;
+        :lora_demodulate_symbol(chirp, 7)
+         → recovered symbol;
+        :Verify: recovered == original;
+        :Print "sym → recovered ✓";
+    endwhile (all symbols)
+}
+
+partition "**LoRa Frame Construction**" {
+    :Build frame: payload "Hello", SF=7
+     n = lora_build_frame(
+       payload, 5, 7, 8, frame);
+    :Print total IQ samples;
+    :Compute duration
+     (n_preamble + n_payload) × T_sym;
+    :Print frame duration;
+}
+
+stop
+
+@enduml

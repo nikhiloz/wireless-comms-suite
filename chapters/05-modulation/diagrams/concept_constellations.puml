@@ -1,0 +1,56 @@
+@startuml concept_constellations
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Digital Modulation — Constellation Maps & BER
+
+rectangle "**BPSK**\n1 bit/symbol" as bpsk #E8F5E9
+
+note bottom of bpsk
+  2 points on real axis
+  (−1, 0) and (+1, 0)
+  Gray-coded: 0/1
+  BER = Q(√(2·Eb/N0))
+  Most robust, lowest rate
+end note
+
+rectangle "**QPSK**\n2 bits/symbol" as qpsk #FFF3E0
+
+note bottom of qpsk
+  4 points at ±1/√2 on I/Q
+  π/4 rotation, 45° spacing
+  Gray-coded: 00,01,11,10
+  Same Eb/N0 as BPSK
+  2× spectral efficiency
+end note
+
+rectangle "**16-QAM**\n4 bits/symbol" as qam #E3F2FD
+
+note bottom of qam
+  16 points on 4×4 I/Q grid
+  Multiple amplitude levels
+  Gray-coded per axis
+  ~4 dB worse than QPSK
+  4× spectral efficiency
+end note
+
+rectangle "**BER vs Eb/N0 Comparison**" as ber #F3E5F5
+
+note bottom of ber
+  Monte Carlo: 10000 bits/point
+  Eb/N0 sweep: 0–12 dB
+  mod_modulate() -> channel_awgn()
+  -> mod_demodulate() -> count errors
+  BPSK ≈ QPSK < 16-QAM (in BER)
+end note
+
+bpsk -[hidden]right-> qpsk
+qpsk -[hidden]right-> qam
+bpsk -down-> ber
+qpsk -down-> ber
+qam -down-> ber
+
+@enduml

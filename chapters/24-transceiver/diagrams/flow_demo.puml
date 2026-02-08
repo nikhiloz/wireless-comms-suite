@@ -1,0 +1,62 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 24 — demo.c Code Flow (Full Transceiver)
+
+start
+
+partition "**TX Phase**" #E8F5E9 {
+    :ASCII message → bit array
+     "Hello, Wireless World!"
+     20 bytes → 160 bits;
+    :Convolutional encode (rate 1/2)
+     conv_encode(bits, 160, coded)
+     → 320 coded bits;
+    :Block interleave (8 × 40)
+     interleaver_init(&itl, 8, 40)
+     interleaver_apply(&itl, coded, 320, interleaved);
+    :QPSK modulate
+     mod_modulate(MOD_QPSK, interleaved, 320, qpsk_syms)
+     → 160 complex symbols;
+    :OFDM modulate (64-FFT, CP=16)
+     ofdm_modulate_block(&p, qpsk_syms, n_ofdm, tx_samples);
+}
+
+partition "**Channel**" #FFEBEE {
+    :Add AWGN at 15 dB SNR
+     channel_awgn(tx, n_samp, 15.0, rx);
+}
+
+partition "**RX Phase**" #E3F2FD {
+    :OFDM demodulate block
+     ofdm_demodulate_block(&p, rx, n_ofdm, rx_syms);
+    :QPSK demodulate
+     mod_demodulate(MOD_QPSK, rx_syms, 160, rx_coded);
+    :De-interleave
+     interleaver_deapply(&itl, rx_coded, 320, deinterleaved);
+    :Viterbi decode
+     viterbi_decode(deinterleaved, 320, decoded)
+     → 160 recovered bits;
+    :Bits → ASCII
+     reconstruct 20-byte message;
+}
+
+partition "**Verification**" #F3E5F5 {
+    :Count bit errors
+     compare 160 tx_bits vs decoded;
+    :Count byte errors
+     compare character-by-character;
+    :Print:
+     Original:  "Hello, Wireless World!"
+     Recovered: "Hello, Wireless World!"
+     Bit errors: 0/160
+     Byte errors: 0/20;
+}
+
+stop
+
+@enduml

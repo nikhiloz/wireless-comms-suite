@@ -1,0 +1,45 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 09 — demo.c Code Flow
+
+start
+
+partition "**BPSK Costas Loop**" {
+    :Generate 200 BPSK symbols
+     ±1 + j0;
+    :Apply frequency offset
+     Δf = 0.01 rad/sample
+     x[k] = s[k] · e^(j·0.01·k);
+    :Run Costas loop
+     carrier_costas_bpsk(
+       rx, 200, bw, damp, corrected);
+    :Measure accuracy on
+     converged 2nd half (k=100..199);
+    :Print accuracy & final freq estimate;
+}
+
+partition "**QPSK Costas Loop**" {
+    :Generate 200 QPSK symbols;
+    :Apply same frequency offset;
+    :Run QPSK Costas loop
+     carrier_costas_qpsk(
+       rx, 200, bw, damp, corrected);
+    :Measure & print QPSK accuracy;
+}
+
+stop
+
+note right
+  Costas loop must converge
+  before symbols can be
+  reliably detected.
+  Accuracy measured only
+  on the settled portion.
+end note
+
+@enduml

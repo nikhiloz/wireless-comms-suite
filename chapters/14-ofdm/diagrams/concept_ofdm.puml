@@ -1,0 +1,62 @@
+@startuml concept_ofdm
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title OFDM System — IFFT/FFT with Cyclic Prefix
+
+rectangle "**TX Data**" as data #E8F5E9
+
+rectangle "**OFDM Transmitter**" as ofdm_tx #FFF3E0 {
+    rectangle "Map to\nSubcarriers" as map #FFE0B2
+    note right of map
+      N=64 subcarriers
+      48 data + 4 pilots
+      + 12 null/guard
+    end note
+
+    rectangle "IFFT\n(64-point)" as ifft #FFE0B2
+    note right of ifft
+      ofdm_modulate()
+      Frequency → Time domain
+      Orthogonal subcarriers
+    end note
+
+    rectangle "Add Cyclic\nPrefix (16)" as cp #FFE0B2
+    note right of cp
+      Copy last 16 samples
+      to front of symbol
+      Absorbs multipath ISI
+      Symbol: 64+16 = 80 samples
+    end note
+
+    map -right-> ifft
+    ifft -right-> cp
+}
+
+rectangle "**Channel**\nAWGN / Multipath" as ch #FFEBEE
+
+rectangle "**OFDM Receiver**" as ofdm_rx #E3F2FD {
+    rectangle "Remove\nCP" as rcp #BBDEFB
+    rectangle "FFT\n(64-point)" as fft #BBDEFB
+    rectangle "Equalise\n& Extract\nData" as eq #BBDEFB
+
+    rcp -right-> fft
+    fft -right-> eq
+    note right of eq
+      ofdm_demodulate()
+      Time → Frequency domain
+      Per-subcarrier equalisation
+    end note
+}
+
+rectangle "**RX Data**" as rxdata #E8F5E9
+
+data -down-> map
+cp -down-> ch
+ch -down-> rcp
+eq -down-> rxdata
+
+@enduml

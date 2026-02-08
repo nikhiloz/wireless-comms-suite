@@ -1,0 +1,40 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 13 — demo.c Code Flow
+
+start
+
+partition "**ZF Frequency-Domain Equalisation**" {
+    :Generate 64 BPSK symbols;
+    :Create frequency-selective channel H(k)
+     (random complex per subcarrier);
+    :Multiply: R(k) = S(k) * H(k);
+    :ZF equalise
+     eq_zf_freq(rx, H, 64, equalised);
+    :Compare S_hat(k) vs S(k);
+    :Print: all 64 symbols recovered ✓;
+}
+
+partition "**LMS Adaptive Equaliser**" {
+    :Generate 2000 BPSK training symbols;
+    :Apply ISI channel h = (1.0, 0.5)
+     r(k) = s(k) + 0.5*s(k-1);
+    :Init 11-tap LMS equaliser
+     eq_lms_init(&eq, 11, 0.01);
+    while (k = 0 .. 1999) is (next sample)
+        :eq_lms_step(&eq, r[k], s[k], &y, &err);
+        if (k ≥ 1000?) then (converged)
+            :Accumulate |err|² for MSE;
+        endif
+    endwhile (done)
+    :Print steady-state MSE (2nd half);
+}
+
+stop
+
+@enduml

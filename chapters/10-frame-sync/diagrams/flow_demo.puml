@@ -1,0 +1,48 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 10 — demo.c Code Flow
+
+start
+
+partition "**Barker-13 Autocorrelation**" {
+    :Define Barker-13 sequence
+     [+1 +1 +1 +1 +1 −1 −1 +1 +1 −1 +1 −1 +1];
+    :Compute autocorrelation R(k)
+     for lags k = 0 .. 12;
+    :Print R(k) values
+     Peak R(0) = 13
+     Sidelobes abs(R(k)) ≤ 1;
+}
+
+partition "**Preamble Detection in Noise**" {
+    :Create 200-sample noise floor
+     channel_awgn_real(zeros, 200, snr, signal);
+    :Embed Barker-13 at position 73;
+    :Run detector
+     idx = frame_sync_detect(
+       signal, 200, barker, 13, 0.8);
+    if (idx >= 0?) then (detected)
+        :Print detected position
+         (should be 73);
+    else (missed)
+        :Print "preamble not found";
+    endif
+}
+
+partition "**Data Scrambling**" {
+    :Generate test data bits;
+    :Scramble with LFSR seed 0x48
+     scrambler(0x63, 0x48, data, n);
+    :Descramble (apply again)
+     scrambler(0x63, 0x48, scrambled, n);
+    :Verify: descrambled == original;
+}
+
+stop
+
+@enduml

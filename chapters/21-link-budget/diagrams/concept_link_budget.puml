@@ -1,0 +1,62 @@
+@startuml concept_link_budget
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Link Budget — Waterfall Analysis
+
+rectangle "**TX Power**\nP_tx (dBm)" as ptx #E8F5E9
+note bottom of ptx
+  Wi-Fi: 20 dBm (100 mW)
+  BT: 0–20 dBm
+  LoRa: 14–20 dBm
+end note
+
+rectangle "**TX Antenna\nGain**\nG_tx (dBi)" as gtx #C8E6C9
+
+rectangle "**Free-Space\nPath Loss**\nFSPL (dB)" as fspl #FFEBEE {
+    note bottom
+      link_fspl_db(freq_hz, dist_m)
+      FSPL = 20log₁₀(d) + 20log₁₀(f)
+            + 20log₁₀(4π/c)
+      @1km, 2.4GHz ≈ 100 dB
+    end note
+}
+
+rectangle "**RX Antenna\nGain**\nG_rx (dBi)" as grx #C8E6C9
+
+rectangle "**RX Power**\nP_rx (dBm)" as prx #FFF3E0 {
+    note bottom
+      link_friis_dbm(ptx, gtx, grx, f, d)
+      P_rx = P_tx + G_tx − FSPL + G_rx
+    end note
+}
+
+rectangle "**Noise Floor**\nN (dBm)" as nf #E3F2FD {
+    note bottom
+      link_noise_floor_dbm(bw_hz, nf_db)
+      N = −174 + 10log₁₀(BW) + NF
+      @1MHz BW, NF=3dB → −111 dBm
+    end note
+}
+
+rectangle "**Required\nSNR / Eb/N0**" as snr #F3E5F5 {
+    note bottom
+      link_required_ebn0(target_ber)
+      Depends on modulation + coding
+    end note
+}
+
+rectangle "**Link Margin**\n= P_rx − N − SNR_req" as margin #FFEBEE
+
+ptx -right-> gtx : "+"
+gtx -right-> fspl : "−"
+fspl -right-> grx : "+"
+grx -right-> prx
+prx -down-> margin
+nf -right-> margin : "−"
+snr -right-> margin : "−"
+
+@enduml

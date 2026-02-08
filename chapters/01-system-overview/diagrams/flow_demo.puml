@@ -1,0 +1,42 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 01 — demo.c Code Flow
+
+start
+
+:Seed RNG
+ comms_seed_rng(42);
+
+:Generate 1000 random bits
+ generate_random_bits(bits, N_BITS);
+
+:BPSK modulate
+ mod_modulate(MOD_BPSK, bits, N_BITS, tx_syms);
+
+:Convert Eb/N0 → SNR
+ ebn0_to_snr(10.0, 1, 1.0, 1);
+
+:Add AWGN noise
+ channel_awgn(tx_syms, N_SYMS, snr_db, rx_syms);
+
+:BPSK demodulate
+ mod_demodulate(MOD_BPSK, rx_syms, N_SYMS, rx_bits);
+
+:Count bit errors
+ compare tx_bits vs rx_bits;
+
+:Print BER comparison
+ Simulated BER vs Theoretical BER
+ count/N_BITS vs ber_bpsk_theory(ebn0);
+
+:Print ASCII constellation
+ of received symbols;
+
+stop
+
+@enduml

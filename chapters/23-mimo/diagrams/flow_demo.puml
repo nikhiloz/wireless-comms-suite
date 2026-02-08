@@ -1,0 +1,50 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 23 — demo.c Code Flow
+
+start
+
+partition "**Alamouti 2×1 vs SISO BER Sweep**" {
+    :Print header: Eb/N0 | SISO BER | Alamouti BER | Gain(dB);
+    while (ebn0 = 0, 2, 4, ... 20 dB) is (next)
+        fork
+            partition "SISO Rayleigh" #FFEBEE {
+                :500 BPSK symbols;
+                :Rayleigh fading: r = h·s + n;
+                :Equalise: ŝ = r/h;
+                :Count errors → siso_ber;
+            }
+        fork again
+            partition "Alamouti 2×1" #E3F2FD {
+                :500 symbol pairs;
+                :Encode: alamouti_encode(s0, s1);
+                :2 TX channels: h₀, h₁ (Rayleigh);
+                :r₀ = h₀·x₀₀ + h₁·x₁₀ + n;
+                :r₁ = h₀·x₀₁ + h₁·x₁₁ + n;
+                :Decode: alamouti_decode(...);
+                :Count errors → alam_ber;
+            }
+        end fork
+        :Print row with diversity gain;
+    endwhile (done)
+}
+
+partition "**MRC Antenna Sweep @10 dB**" {
+    while (Nr = 1, 2, 4) is (next)
+        :1000 BPSK symbols through
+         Nr independent Rayleigh channels;
+        :MRC combine
+         mimo_mrc(rx, h, Nr, &combined);
+        :Demod → count errors;
+    endwhile (done)
+    :Print Nr vs BER table;
+}
+
+stop
+
+@enduml

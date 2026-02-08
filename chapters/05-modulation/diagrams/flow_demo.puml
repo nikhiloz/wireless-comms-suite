@@ -1,0 +1,41 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 05 — demo.c Code Flow (Monte Carlo BER)
+
+start
+
+:Initialise
+ N_BITS = 10000
+ Eb/N0 range: 0, 2, 4, 6, 8, 10, 12 dB
+ Schemes: BPSK, QPSK, 16-QAM;
+
+:Print table header;
+
+while (for each Eb/N0 value) is (next point)
+    while (for each modulation scheme) is (next scheme)
+        :Generate N_BITS random bits
+         generate_random_bits();
+        :Modulate
+         mod_modulate(scheme, bits, N, syms);
+        :Convert Eb/N0 → SNR
+         ebn0_to_snr(ebn0, bps, 1.0, 1);
+        :Add AWGN
+         channel_awgn(tx, N_syms, snr, rx);
+        :Demodulate
+         mod_demodulate(scheme, rx, N_syms, rx_bits);
+        :Count errors
+         BER = errors / N_BITS;
+    endwhile (all schemes)
+    :Print row: Eb/N0 | BPSK BER | QPSK BER | 16-QAM BER;
+endwhile (all points)
+
+:Print QPSK ASCII constellation at 10 dB;
+
+stop
+
+@enduml

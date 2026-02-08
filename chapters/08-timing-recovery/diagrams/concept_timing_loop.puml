@@ -1,0 +1,57 @@
+@startuml concept_timing_recovery
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Symbol Timing Recovery — Feedback Loop
+
+rectangle "**Received\nSamples**\nr[n]" as input #E8F5E9
+
+rectangle "**Interpolator**" as interp #FFF3E0 {
+    note bottom
+      Resample at estimated
+      optimal timing instant
+      μₖ fractional delay
+    end note
+}
+
+rectangle "**Timing Error\nDetector (TED)**" as ted #FFEBEE {
+    rectangle "Gardner" as gard #FFCDD2
+    note right of gard
+      timing_recover_gardner()
+      e = x(n−½)[x(n) − x(n−1)]
+      Non-data-aided
+      Works before carrier recovery
+    end note
+
+    rectangle "Mueller–Müller" as mm #FFCDD2
+    note right of mm
+      timing_recover_mm()
+      e = a̅ₖ·x(n−1) − a̅ₖ₋₁·x(n)
+      Decision-directed
+      Better steady-state
+    end note
+}
+
+rectangle "**PI Loop Filter**" as lpf #E3F2FD {
+    note bottom
+      v(n) = K₁·e(n) + K₂·Σe
+      Controls NCO frequency
+      Loop BW + damping ζ
+    end note
+}
+
+rectangle "**NCO**\n(Numerically\nControlled\nOscillator)" as nco #F3E5F5
+
+rectangle "**Recovered\nSymbols**\nâₖ" as out #E8F5E9
+
+input -right-> interp
+interp -right-> ted
+ted -down-> lpf
+lpf -down-> nco
+nco -up-> interp : "μₖ\n(fractional\ndelay)"
+interp -right-> out : "sampled at\noptimal point"
+
+@enduml

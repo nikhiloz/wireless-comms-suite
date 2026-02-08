@@ -1,0 +1,50 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 20 — demo.c Code Flow
+
+start
+
+partition "**ADS-B Encode**" {
+    :Set ICAO = 0x4840D6
+     Set 56-bit ME field;
+    :Encode DF17 message with CRC-24
+     adsb_encode(icao, me56, msg112);
+    :Print 112 encoded bits;
+}
+
+partition "**PPM Modulate**" {
+    :Modulate at 2 MHz sample rate
+     n = adsb_modulate(msg, 112, 2e6, iq);
+    :Print sample count
+     240 = 16 (preamble) + 224 (data);
+    :8µs preamble + 112µs data = 120µs;
+}
+
+partition "**Demodulate & Verify**" {
+    :Demodulate PPM → bit decisions
+     adsb_demodulate(iq, 240, rx_msg, &n_bits);
+    :Verify CRC-24
+     remainder = adsb_crc24(rx_msg, 14);
+    if (remainder == 0?) then (valid)
+        :Print "CRC OK ✓";
+        :Extract ICAO from bits 8..31;
+        :Print recovered ICAO address;
+    else (fail)
+        :Print "CRC FAIL";
+    endif
+}
+
+partition "**Standalone CRC-24**" {
+    :Compute CRC-24 on test data
+     adsb_crc24(test_bytes, len);
+    :Print CRC value as hex;
+}
+
+stop
+
+@enduml

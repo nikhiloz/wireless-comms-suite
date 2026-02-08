@@ -1,0 +1,44 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 08 — demo.c Code Flow
+
+start
+
+:Generate 100 BPSK bits
+ comms_seed_rng(42);
+:NRZ encode (±1);
+:Upsample to 4 samples/symbol (sps=4);
+
+fork
+    partition "**Gardner TED**" {
+        :timing_recover_gardner(
+          signal, sig_len, sps,
+          recovered, &n_recovered);
+        :Compare recovered vs original;
+        :Print accuracy: X / Y correct;
+    }
+fork again
+    partition "**Mueller–Müller TED**" {
+        :timing_recover_mm(
+          signal, sig_len, sps,
+          recovered, &n_recovered);
+        :Compare recovered vs original;
+        :Print accuracy: X / Y correct;
+    }
+end fork
+
+stop
+
+note right
+  Both TEDs operate on the same
+  input signal independently.
+  Accuracy compared by counting
+  matching sign decisions.
+end note
+
+@enduml

@@ -27,4 +27,17 @@ The demo sends 1000 random bits through BPSK modulation over an AWGN channel at 
 - Proakis & Salehi, *Digital Communications*, Chapter 1
 
 ---
+## Diagrams
+
+### Concept — System Block Diagram
+![System block diagram](diagrams/concept_system_block.png)
+
+End-to-end digital communications pipeline: source bits → encoder → modulator → AWGN channel → demodulator → decoder → recovered bits. Each block maps directly to a library module in the suite.
+
+### Code Flow — `demo.c`
+![demo.c code flow](diagrams/flow_demo.png)
+
+Walkthrough of the chapter demo: seed RNG, generate 1000 random bits, BPSK-modulate, convert Eb/N0 to linear SNR, add AWGN noise, demodulate, count errors, and print simulated vs. theoretical BER.
+
+---
 [← Home](../../README.md) | [Next: Source Coding →](../02-source-coding/README.md)

@@ -1,0 +1,50 @@
+@startuml concept_equaliser
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Channel Equalisation — ZF & LMS Adaptive
+
+rectangle "**TX**\ns[k]" as tx #E8F5E9
+
+rectangle "**ISI Channel**\nh = [1.0, 0.5]" as ch #FFEBEE {
+    note bottom
+      r[k] = s[k]*h[0] + s[k-1]*h[1] + n[k]
+      Inter-symbol interference (ISI)
+      Distorts received constellation
+    end note
+}
+
+rectangle "**RX**\nr[k]" as rx #FFF3E0
+
+rectangle "**Zero-Forcing (ZF)**" as zf #E3F2FD {
+    note bottom
+      eq_zf_freq(rx, H, n, out)
+      Ŝ[k] = R[k] / H[k]
+      Perfect if no noise
+      Amplifies noise at H[k]≈0
+    end note
+}
+
+rectangle "**LMS Adaptive**" as lms #F3E5F5 {
+    note bottom
+      eq_lms_step(&eq, x, desired, &y, &err)
+      w(n+1) = w(n) + μ · e(n) · x*(n)
+      Step size μ: convergence vs misadjustment
+      11 taps, trained over 1000 iterations
+      Tracks time-varying channels
+    end note
+}
+
+rectangle "**Equalised Output**\nŝ[k] ≈ s[k]" as out #E8F5E9
+
+tx -right-> ch
+ch -right-> rx
+rx -down-> zf
+rx -down-> lms
+zf -down-> out
+lms -down-> out
+
+@enduml

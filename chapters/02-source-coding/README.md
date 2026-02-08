@@ -18,4 +18,12 @@ make build/bin/02-source-coding && ./build/bin/02-source-coding
 - Huffman, "A Method for the Construction of Minimum-Redundancy Codes" (1952)
 
 ---
+## Diagrams
+
+### Concept — Source Coding Pipeline
+![Source coding concepts](diagrams/concept_source_coding.png)
+
+Entropy as the fundamental compression limit, Huffman tree construction for optimal prefix-free codes, and run-length encoding for repetitive data — the building blocks that reduce redundancy before transmission.
+
+---
 [← System Overview](../01-system-overview/README.md) | [Next: Channel Coding →](../03-channel-coding/README.md)

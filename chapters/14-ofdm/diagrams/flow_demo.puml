@@ -1,0 +1,42 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 14 — demo.c Code Flow
+
+start
+
+:Initialise OFDM system
+ ofdm_init(&p, 64, 16, 4, pilots)
+ N_fft=64, CP=16, 4 pilot subcarriers;
+
+partition "**Single-Symbol Noiseless Test**" {
+    :Generate 48 BPSK data symbols;
+    :OFDM modulate (1 symbol)
+     ofdm_modulate(&p, data_syms, tx_samples);
+    :OFDM demodulate
+     ofdm_demodulate(&p, tx_samples, rx_syms, NULL);
+    :Compute MSE = Σ|tx−rx|²/48;
+    :Print MSE ≈ 0 (noiseless);
+}
+
+partition "**10-Symbol Block + AWGN Test**" {
+    :Generate 10 × 48 BPSK data symbols;
+    :OFDM modulate block
+     ofdm_modulate_block(&p, data, 10, tx_block);
+    :Add AWGN at 20 dB
+     channel_awgn(tx_block, n_samps, 20, rx_block);
+    :OFDM demodulate block
+     ofdm_demodulate_block(&p, rx_block, 10, rx_data);
+    :Hard-decision demod
+     sign(Re{rx_syms});
+    :Compute MSE and BER;
+    :Print MSE and BER at 20 dB;
+}
+
+stop
+
+@enduml

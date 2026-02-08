@@ -1,0 +1,55 @@
+@startuml concept_fading
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Fading Channels — Rayleigh, Rician & Multipath
+
+rectangle "**TX**" as tx #E8F5E9
+
+rectangle "**Propagation Environment**" as env #FFF3E0 {
+
+    rectangle "Direct Path\n(Line of Sight)" as los #C8E6C9
+    rectangle "Reflected\nPath 1" as r1 #FFE0B2
+    rectangle "Reflected\nPath 2" as r2 #FFE0B2
+    rectangle "Scattered\nPath" as s1 #FFCDD2
+
+    note right of los
+      LOS present: **Rician**
+      K-factor = LOS power / scatter power
+      Higher K → less fading
+    end note
+
+    note right of r1
+      No LOS: **Rayleigh**
+      K = 0 → severe fading
+      Envelope: Rayleigh PDF
+    end note
+}
+
+rectangle "**RX**" as rx #E3F2FD
+
+rectangle "**Tapped Delay Line Model**" as tdl #F3E5F5 {
+    note bottom
+      channel_multipath_init(&ch, n_taps, delays, gains_db)
+      channel_multipath_apply(&ch, in, n, out, &out_len)
+      h(t) = Σ αᵢ · δ(t − τᵢ)
+      delays: [0, 3, 7] samples
+      gains:  [0, −3, −6] dB
+    end note
+}
+
+tx -down-> los
+tx -down-> r1
+tx -down-> r2
+tx -down-> s1
+los -down-> rx
+r1 -down-> rx
+r2 -down-> rx
+s1 -down-> rx
+
+rx -down-> tdl : "model as"
+
+@enduml

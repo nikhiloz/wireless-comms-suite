@@ -1,0 +1,44 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 03 — demo.c Code Flow
+
+start
+
+partition "**Even Parity Check**" {
+    :Compute even parity of (1,0,1,1,0)
+     parity_even(data, 5);
+    :Print parity bit;
+}
+
+partition "**Hamming(7,4) Encode → Corrupt → Decode**" {
+    :Encode 4 data bits → 7 codeword bits
+     hamming74_encode(data, codeword);
+    :Print original codeword;
+    :Inject error: flip bit 2
+     codeword[2] ^= 1;
+    :Decode and correct
+     pos = hamming74_decode(codeword);
+    if (pos >= 0?) then (error found)
+        :Print corrected position;
+    else (no error)
+        :Print "no error detected";
+    endif
+    :Print corrected codeword;
+}
+
+partition "**CRC Checksums**" {
+    :Compute CRC-16 on "Hello, FEC!"
+     crc16_ccitt(str, len);
+    :Compute CRC-32 on same string
+     crc32(str, len);
+    :Print CRC values as hex;
+}
+
+stop
+
+@enduml

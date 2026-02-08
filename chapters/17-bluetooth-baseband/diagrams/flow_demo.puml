@@ -1,0 +1,44 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 17 — demo.c Code Flow
+
+start
+
+partition "**Access Code Generation**" {
+    :Generate BT access code from LAP
+     bt_gen_access_code(0x9E8B33, access_code);
+    :Print 72-bit access code;
+}
+
+partition "**Data Whitening**" {
+    :Prepare 8 test bytes;
+    :Whiten with clock6 = 0x3F
+     bt_whiten(data, 64, 0x3F);
+    :Dewhiten (apply again)
+     bt_whiten(whitened, 64, 0x3F);
+    :Verify: recovered == original;
+    :Print whitening self-inverse ✓;
+}
+
+partition "**Full GFSK Packet**" {
+    :Configure BtPacketConfig
+     mode = BT_CLASSIC
+     LAP = 0x9E8B33
+     access_code from step 1;
+    :Build GFSK packet (5 bytes, 8 sps)
+     n_samps = bt_build_packet(
+       &cfg, payload, 5, 8, iq_out);
+    :Print IQ sample count;
+    :Compute average power
+     Σ|iq|²/n_samps;
+    :Print average power;
+}
+
+stop
+
+@enduml

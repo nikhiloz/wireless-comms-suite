@@ -1,0 +1,42 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 04 — demo.c Code Flow
+
+start
+
+:Generate 20 random bits
+ generate_random_bits(bits, 20);
+
+fork
+    :NRZ encode
+     nrz_encode(bits, 20, nrz);
+    :Print NRZ levels;
+fork again
+    :Manchester encode
+     manchester_encode(bits, 20, manch);
+    :Print Manchester (40 levels);
+end fork
+
+:Design raised cosine filter
+ raised_cosine(0.35, 8, 4, rc_filt)
+ 33 taps;
+
+:Design root-raised cosine filter
+ root_raised_cosine(0.35, 8, 4, rrc_filt);
+
+:Pulse-shape NRZ with RC filter
+ pulse_shape(nrz, 20, rc_filt, 33, shaped);
+
+:Print shaped waveform samples;
+
+:Render ASCII eye diagram
+ print_eye_diagram_ascii(shaped, len, sps);
+
+stop
+
+@enduml

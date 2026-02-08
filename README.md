@@ -9,6 +9,7 @@ Built as the practical bridge between [dsp-tutorial-suite](https://github.com/ni
 ## Highlights
 
 - **24 chapters** — each with a runnable `demo.c` + an explanatory `README.md`
+- **43 PlantUML diagrams** — concept overviews and code-flow charts embedded in every chapter README
 - **9 library modules** (modulation, coding, channel, sync, OFDM, spread spectrum, equaliser, PHY, utils)
 - **53 unit tests** across 8 test suites — all passing
 - **Pure C99**, zero external dependencies (only `math.h` / `stdlib.h`)
@@ -63,7 +64,7 @@ wireless-comms-suite/
 │   ├── test_spread.c         7 tests
 │   ├── test_equaliser.c      5 tests
 │   └── test_phy.c            10 tests
-├── chapters/             24 directories (demo.c + README.md each)
+├── chapters/             24 directories (demo.c + README.md + diagrams/ each)
 ├── reference/
 │   ├── ARCHITECTURE.md       module dependency graph, conventions
 │   └── API.md                full API surface for all 9 modules

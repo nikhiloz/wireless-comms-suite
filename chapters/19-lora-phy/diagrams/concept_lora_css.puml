@@ -1,0 +1,68 @@
+@startuml concept_lora_css
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title LoRa PHY — Chirp Spread Spectrum
+
+rectangle "**Upchirp (Base)**" as base #E8F5E9
+
+note bottom of base
+  Frequency sweeps from
+  -BW/2 to +BW/2
+  over 2^SF samples
+  SF=7: 128 samples/chirp
+end note
+
+rectangle "**Data Symbol Encoding**" as encode #FFF3E0
+
+note bottom of encode
+  lora_modulate_symbol(sym, SF, out)
+  Symbol value m (0 to 2^SF-1)
+  = cyclic shift of base chirp
+  Shift by m samples
+  SF bits per chirp symbol
+end note
+
+rectangle "**Dechirp + FFT**" as dechirp #E3F2FD
+
+note bottom of dechirp
+  lora_demodulate_symbol(in, SF)
+  Multiply RX chirp x conjugate(base)
+  -> constant-frequency tone
+  FFT -> peak at bin = symbol value m
+  Robust: works at SNR < 0 dB
+end note
+
+rectangle "**LoRa Frame**" as frame #F3E5F5 {
+    rectangle "Preamble\n8 upchirps" as pre #E1BEE7
+    rectangle "Sync\n2 downchirps" as sync #CE93D8
+    rectangle "Data\nchirps" as datac #BA68C8
+
+    pre -right-> sync
+    sync -right-> datac
+
+    note bottom of frame
+      lora_build_frame(payload, len,
+        SF, n_preamble, out)
+      SF7-SF12 trade-off:
+      Higher SF -> longer range, lower rate
+    end note
+}
+
+rectangle "**SF Comparison**" as sftbl #FFEBEE
+
+note bottom of sftbl
+  SF 7:  128 symbols, 7 bits/sym, Fast
+  SF 12: 4096 symbols, 12 bits/sym, Slow
+  Each +1 SF -> 2x duration, +3 dB link
+end note
+
+base -right-> encode : "base chirp"
+encode -right-> dechirp : "-> channel ->"
+encode -down-> frame
+sftbl -[hidden]-> frame
+
+@enduml

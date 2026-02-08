@@ -1,0 +1,48 @@
+@startuml flow_demo
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam activityBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Ch 15 — demo.c Code Flow
+
+start
+
+partition "**M-Sequence Generation**" {
+    :Generate 31-chip m-sequence
+     pn_msequence(0x25, 5, seq)
+     LFSR degree=5, length=2⁵−1=31;
+    :Compute autocorrelation R[k];
+    :Print: peak=31, sidelobes=−1;
+}
+
+partition "**DSSS Spread/Despread**" {
+    :Generate 8 random data bits (±1);
+    :Generate 7-chip PN code
+     pn_msequence(0x0B, 3, pn);
+    :Spread: dsss_spread(data, 8, pn, 7, spread)
+     → 56 chips;
+    :Despread: dsss_despread(spread, 8, pn, 7, recovered);
+    :Verify: recovered == original;
+    :Print processing gain =
+     10·log₁₀(7) ≈ 8.5 dB;
+}
+
+partition "**FHSS Hop Pattern**" {
+    :Init hopper
+     fhss_init(&fp, 20, 50, seed, dwell);
+    :Print 20 hop channels
+     fhss_get_channel(&fp, i);
+}
+
+partition "**Gold Code**" {
+    :Generate Gold code
+     pn_gold(0x25, 0x37, 5, 3, gold_seq)
+     length = 31;
+    :Print first 31 chips;
+}
+
+stop
+
+@enduml

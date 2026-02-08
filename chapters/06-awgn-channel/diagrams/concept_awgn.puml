@@ -1,0 +1,43 @@
+@startuml concept_awgn
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title AWGN Channel Model
+
+rectangle "**TX Signal**\ns(t)" as tx #E8F5E9
+
+rectangle "**AWGN Channel**" as ch #FFF3E0 {
+    rectangle "Additive White\nGaussian Noise" as noise #FFE0B2
+    note right of noise
+      n ~ N(0, σ²)
+      σ² = P_signal / (2 · Eb/N0)
+      White: flat PSD across all f
+      Gaussian: amplitude PDF
+    end note
+}
+
+rectangle "**RX Signal**\nr(t) = s(t) + n(t)" as rx #E3F2FD
+
+rectangle "**Performance**" as perf #F3E5F5 {
+    note bottom
+      BER_BPSK = Q(√(2·Eb/N0))
+      channel_awgn(tx, n, snr_db, rx)
+      channel_awgn_real(tx, n, snr_db, rx)
+      ber_bpsk_theory(ebn0_db)
+    end note
+}
+
+tx -right-> noise : "+ noise"
+noise -right-> rx
+rx -down-> perf : "measure BER"
+
+note bottom of ch
+  Simplest channel model
+  No fading, no multipath
+  Benchmark for all schemes
+end note
+
+@enduml

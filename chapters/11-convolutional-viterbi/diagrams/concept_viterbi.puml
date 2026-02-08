@@ -1,0 +1,56 @@
+@startuml concept_viterbi
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Convolutional Codes + Viterbi Decoder
+
+rectangle "**Convolutional Encoder**\nRate 1/2, K=7" as enc #E8F5E9
+
+note bottom of enc
+  conv_encode(in, n_bits, out)
+  Generators: g1=133o, g2=171o
+  6-bit shift register (64 states)
+  Output: 2 coded bits per input bit
+  No tail-bit flushing
+end note
+
+rectangle "**Trellis (64 States)**" as trellis #FFF3E0
+
+note bottom of trellis
+  Each state: 6-bit register value
+  2 transitions per state (input 0/1)
+  Path metric: Hamming distance
+  Survivor: keep lowest-metric path
+  ----
+  t=0    t=1    t=2    t=3 ...
+   S0 --- S0 --- S0 --- S0
+    \\      /\\      /\\      /
+     S32 -- S16 -- S8 ...
+end note
+
+rectangle "**Viterbi (ML Decoder)**" as dec #E3F2FD
+
+note bottom of dec
+  viterbi_decode(coded, n_coded, decoded)
+  Add-Compare-Select at each step
+  Traceback from best final state
+  Decoding delay: K-2 = 5 bits
+  Near ML performance
+end note
+
+rectangle "**Coding Gain**" as gain #F3E5F5
+
+note bottom of gain
+  ~5 dB gain at BER = 1e-5
+  Coded BER << Uncoded BER
+  Trade-off: 2x bandwidth for gain
+end note
+
+enc -right-> trellis : "coded bits\n(2n bits)"
+trellis -right-> dec : "noisy\nobservations"
+dec -down-> gain
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml concept_transceiver
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Full Transceiver Capstone — End-to-End Pipeline
+
+rectangle "**TX Chain**" as tx #E8F5E9 {
+    rectangle "ASCII Message\n(20 bytes)" as msg #C8E6C9
+    rectangle "Bits\n(160 bits)" as bits #A5D6A7
+    rectangle "Conv Encode\n(rate 1/2)" as conv #81C784
+    note right of conv : conv_encode() → 320 coded bits
+    rectangle "Block\nInterleave" as itl #66BB6A
+    note right of itl : interleaver_apply() 8×cols
+    rectangle "QPSK\nModulate" as qpsk #4CAF50
+    note right of qpsk : mod_modulate(MOD_QPSK)
+    rectangle "OFDM TX\n(64-FFT, CP=16)" as ofdm_tx #388E3C
+    note right of ofdm_tx : ofdm_modulate_block()
+
+    msg -down-> bits
+    bits -down-> conv
+    conv -down-> itl
+    itl -down-> qpsk
+    qpsk -down-> ofdm_tx
+}
+
+rectangle "**AWGN Channel\n(15 dB SNR)**" as ch #FFEBEE {
+    note bottom
+      channel_awgn()
+      Tests system robustness
+    end note
+}
+
+rectangle "**RX Chain**" as rx #E3F2FD {
+    rectangle "OFDM RX\n(remove CP + FFT)" as ofdm_rx #42A5F5
+    note left of ofdm_rx : ofdm_demodulate_block()
+    rectangle "QPSK\nDemod" as qpsk_rx #64B5F6
+    note left of qpsk_rx : mod_demodulate(MOD_QPSK)
+    rectangle "De-\ninterleave" as ditl #90CAF9
+    note left of ditl : interleaver_deapply()
+    rectangle "Viterbi\nDecode" as vit #BBDEFB
+    note left of vit : viterbi_decode() → 160 bits
+    rectangle "Bits →\nASCII" as ascii #E3F2FD
+    note left of ascii : Recovered message
+
+    ofdm_rx -down-> qpsk_rx
+    qpsk_rx -down-> ditl
+    ditl -down-> vit
+    vit -down-> ascii
+}
+
+rectangle "**Integrity Check**" as check #F3E5F5 {
+    note bottom
+      Bit errors: count mismatches
+      Byte errors: character diffs
+      Print recovered vs original message
+    end note
+}
+
+ofdm_tx -right-> ch
+ch -right-> ofdm_rx
+ascii -down-> check
+
+@enduml

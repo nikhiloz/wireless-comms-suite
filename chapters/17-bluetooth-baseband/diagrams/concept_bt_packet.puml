@@ -1,0 +1,59 @@
+@startuml concept_bt_packet
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Monospaced
+skinparam rectangleBorderColor #333333
+skinparam arrowColor #2266AA
+skinparam titleFontSize 18
+
+title Bluetooth Baseband — Packet Structure & GFSK
+
+rectangle "**BT Classic Packet**" as pkt #E8F5E9 {
+    rectangle "Access Code\n(72 bits)" as ac #C8E6C9
+    note bottom of ac
+      bt_gen_access_code(LAP, ac)
+      Derived from 24-bit LAP
+      Sync word for packet detection
+      LAP = 0x9E8B33
+    end note
+
+    rectangle "Header\n(54 bits)" as hdr #A5D6A7
+    note bottom of hdr
+      Packet type, flow control
+      HEC-protected
+    end note
+
+    rectangle "Payload\n(variable)" as payload #81C784
+    note bottom of payload
+      0–2745 bits (DM/DH packets)
+      CRC-16 protected
+    end note
+}
+
+rectangle "**Data Whitening**" as whiten #FFF3E0 {
+    note bottom
+      bt_whiten(data, n, clock6)
+      LFSR: x⁷+x⁴+1 (same as Wi-Fi!)
+      Seed from master clock[6:1]
+      Self-inverse: apply twice = original
+    end note
+}
+
+rectangle "**GFSK Modulator**" as gfsk #E3F2FD {
+    note bottom
+      bt_build_packet(cfg, payload, n_bytes, sps, out)
+      BT product = 0.5
+      Gaussian filter → smoother transitions
+      Modulation index h = 0.32
+      ±f_dev around carrier (1 MHz)
+    end note
+}
+
+rectangle "**IQ Baseband Signal**" as iq #F3E5F5
+
+ac -right-> hdr
+hdr -right-> payload
+payload -down-> whiten
+whiten -down-> gfsk : "whitened bits"
+gfsk -down-> iq : "complex samples\nat 8× oversampling"
+
+@enduml
