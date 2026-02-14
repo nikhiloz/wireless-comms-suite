@@ -162,7 +162,7 @@ void eq_rls_free(RlsEqualiser *eq)
 
 Cplx eq_rls_step(RlsEqualiser *eq, Cplx input, Cplx desired, Cplx *error)
 {
-    int N = eq->n_taps;
+    int N = eq->n_taps; if (N <= 0) { if (error) *error = cplx(0,0); eq->idx = (eq->idx + 1) % 1; return cplx(0,0); }
     eq->buf[eq->idx] = input;
 
     /* Output: y = w^H · x */
@@ -177,7 +177,7 @@ Cplx eq_rls_step(RlsEqualiser *eq, Cplx input, Cplx desired, Cplx *error)
 
     /* Simplified RLS update using scalar gain (for real-valued P) */
     /* k = P·x / (lambda + x^H·P·x) */
-    double *Px = (double *)calloc(N, sizeof(double));
+    double *Px = (double *)calloc((size_t)N, sizeof(double));
     double xPx = 0;
     for (int i = 0; i < N; i++) {
         Px[i] = 0;

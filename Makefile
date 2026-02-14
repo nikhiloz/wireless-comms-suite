@@ -23,7 +23,8 @@ SOURCES := src/comms_utils.c \
 	src/ofdm.c \
 	src/spread_spectrum.c \
 	src/equaliser.c \
-	src/phy.c
+	src/phy.c \
+	src/analog_demod.c
 OBJECTS := $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
 # Tests
@@ -60,7 +61,8 @@ CHAPTER_DEMOS := chapters/01-system-overview/demo.c \
 	chapters/21-link-budget/demo.c \
 	chapters/22-ber-simulation/demo.c \
 	chapters/23-mimo/demo.c \
-	chapters/24-transceiver/demo.c
+	chapters/24-transceiver/demo.c \
+	chapters/25-fm-broadcast/demo.c
 
 # ── Default target ────────────────────────────────────────────────
 all: release
@@ -165,11 +167,16 @@ $(BIN_DIR)/23-mimo: chapters/23-mimo/demo.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/24-transceiver: chapters/24-transceiver/demo.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/25-fm-broadcast: chapters/25-fm-broadcast/demo.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+
 # ── Test binaries ────────────────────────────────────────────────
 tests_build: $(BIN_DIR)/test_modulation $(BIN_DIR)/test_coding \
 	$(BIN_DIR)/test_channel $(BIN_DIR)/test_sync \
 	$(BIN_DIR)/test_ofdm $(BIN_DIR)/test_spread \
-	$(BIN_DIR)/test_equaliser $(BIN_DIR)/test_phy
+	$(BIN_DIR)/test_equaliser $(BIN_DIR)/test_phy \
+	$(BIN_DIR)/test_analog_demod
 
 $(BIN_DIR)/test_modulation: tests/test_modulation.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
@@ -195,6 +202,9 @@ $(BIN_DIR)/test_equaliser: tests/test_equaliser.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/test_phy: tests/test_phy.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/test_analog_demod: tests/test_analog_demod.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
+
 # ── Run all tests ────────────────────────────────────────────────
 test: tests_build
 	@echo "=== Running Modulation tests ==="
@@ -213,6 +223,8 @@ test: tests_build
 	$(BIN_DIR)/test_equaliser
 	@echo "\n=== Running PHY tests ==="
 	$(BIN_DIR)/test_phy
+	@echo "\n=== Running Analog Demod tests ==="
+	$(BIN_DIR)/test_analog_demod
 
 # ── Run all chapter demos ────────────────────────────────────────
 run: chapters_build
